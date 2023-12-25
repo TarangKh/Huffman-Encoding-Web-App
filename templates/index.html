@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="..\static\style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Huffman Encoder</title>
 </head>
@@ -19,13 +19,13 @@
             
             </div>
             <span class="nav-item">
-                <a  class="nav-link" href="#">Tool</a>
+                <a  class="nav-link" href="#input">Tool</a>
             </span>
             <span class="nav-item">
-                <a class="nav-link"  href="#">Theory</a>
+                <a class="nav-link"  href="#thr">Theory</a>
             </span>
             <span class="nav-item">
-                <a  class="nav-link" href="#">About</a>
+                <a  class="nav-link" href="#about">About</a>
             </span>
         </div>
     </div>
@@ -34,7 +34,7 @@
     <main>
         <div class="video-container">
             <video autoplay loop muted plays-inline class="background-video">
-                <source src="static/night_video1.mp4" type="video/mp4">
+                <source src="..\static\night_video1.mp4" type="video/mp4">
             </video>
             <div class="content">
                 <div class="h1">
@@ -42,17 +42,19 @@
                     <h1>with Huffman Encoding</h1>
                 </div>
                 <div class="b">
-                    <a class="a" href="#">Explore</a>
+                    <a class="a" href="#input">Explore</a>
                 </div>
             </div>
         </div>
 
 
-        <div style="height: 160px; width: 100%; background-color: rgb(26, 25, 25);"></div>
+        <div class="transition-block" style="height: 160px; width: 100%; background-color: rgb(26, 25, 25); ">
 
-        <div class="tool-container">
+        </div>
+
+        <div id="input" class="tool-container">
             <div class="content-container">
-                <form action="" method="post">
+                <form id= "form" action="" method="post">
                 <div class="input-container">
                     <label class="input-label" for="ip">Text to encode</label>
                         <textarea name="input" id="ip" cols="65" rows="6" placeholder="Write here the text to encode"></textarea>
@@ -64,16 +66,279 @@
                 <div class="output-container">
                     <div>
                         <label for="op">Encoded text</label>
-                        <textarea name="output" id="op" cols="65" rows="6">
-                            {{ result }}
-                        </textarea>
+                        <textarea name="output" id="op" cols="65" rows="6">{{ encoded_string }}</textarea>
                     </div>
                 </div>
             </div>
         </div>
 
-    </main>
+        {% if encoded_string %}
+        <div class ="calculations">
+            <div class="inner-calc">
+                <div class="show-freq">
+                    <p class="table-heading">Frequency</p>
+                 
+                    <table class="table" border="1">
+                        <tr class="table-head">
+                            <th class="b-l bb">character</th>
+                            <th class="b-r bb">quantity</th>
+                        </tr>
+                        {% for item in freq_arr %}
+                        <tr>
+                            <td> {{ item[0] }}</td>
+                            <td> {{ item[1] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+               
+                </div>
+                <div class="show-math">
+                    <h3 class="para-heading">Calculations</h3>
+                    <div class="blue-border">
+                    <p class="para">
+                        The input text has N = {{ total_words }} symbols of which {{ unique_words }} are unique.After computing the probability of each and building the tree, we can use it to fill the alphabet table with every encoded symbol. Then, we just have to swap each symbol for its binary result, and we get our encoded string. With the obtained table we can compute the average length of the code words,
+                    </p>
+                    <ul class="list">
+                        <li class="li-item">
+                            Original size of text: {{ total_words*8 }} bits
+                        </li>
+                        <li class="li-item">
+                            Compressed size of text: {{ compressed_size }} bits
+                        </li>
+                        <li>
+                            Compression ratio: {{ compressed_size/(total_words*8) }}
+                        </li>
+                    </ul>
+                    </div>
+                    <div class="download-box" style="text-align: center; margin-top:2rem;">
+                    <a class="download-button" href="{{ url_for('download_file') }}">Download Encoded Message</a>
+                    </div>
+                </div>
+                <div class="show-code">
+                    <p class="table-heading">Code Alphabet</p>
+                    
+                    <table class="table" border="1">
+                        <tr class="table-head">
+                            <th class="b-l bb">character</th>
+                            <th class="b-r bb">code</th>
+                        </tr>
+                        {% for item in code_arr %}
+                        <tr>
+                            <td> {{ item[0] }} </td>
+                            <td> {{ item[1] }} </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    </div>
+              
+            </div>
+        </div>
+        {% endif %}
 
+        <div style="width:100%; display:flex; justify-content:center; flex-direction:column; font-weight:300;">
+        <div class="theory-outer-box">
+            <div id="thr" class="theory">
+                <h3 style="font-weight:bold;
+                 margin-bottom: 2rem;  font-style:italic; text-align:center;
+                 font-size: 1.5rem;">
+                    What is Huffman Coding?
+                </h3>
+                <p>
+                    First of all, let's start with codification in general. When we transmit information, need to convert the data (text, music, video, etc.) into binary code. To do this, we assign a code to each piece of data so we can distinguish them, and decode them later.
+                </p>
+                <p>
+                    If we take a string as an example, for example 'ABACA', we could assign a same-length code to each one of the unique symbols (usually called naive coding).
+                </p>
+                <div class="ex-table">
+                    <table border="1">
+                        <tr>
+                            <th>
+                                Naive Coding
+                            </th>
+                           
+                        </tr>
+                        <tr>
+                            <td>
+                                A
+                            </td>
+                            <td>
+                                00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                B
+                            </td>
+                            <td>01</td>
+                        </tr>
+                        <tr>
+                            <td>C</td>
+                            <td>11</td>
+                        </tr>
+                    </table>
+                    <div style="font-style:italic; display:flex; margin-left:2rem; flex-direction: column;  justify-content:left;">
+                    <p style="font-size:1.2rem;">Encoded Output: </p>
+                    <br>
+                    <p class="kk" style="font-size:1.2rem; color:rgb(198, 198, 5)">00 01 00 11 00</p>
+                    <br>
+                    <p>10 char * 8 bits/char = 80 bits</p>
+                    </div>
+                </div>
+                <p>
+                    With the obtained table, we could later translate the binary codes back to the text without loosing information on the process, but is this the best way to do this?
+                </p>
+                <p>
+                    Huffman coding improves this process, being a lossless data compression algorithm that assigns variable-length codes based on the frequencies of our input characters.
+                </p>
+                <p>To determine how to assign the codes to each symbol, we have to take the following steps:</p>
+                <ol style="padding-left: 4rem;">
+                    <li>Analyse the frequency of each character</li>
+                    <li>Build the binary tree:</li>
+                    <ul style="padding-left:3rem;">
+                        <li>Take the pair of nodes with the least frequency</li>
+                        <li>Iterate until left with one node</li>
+                    </ul>
+                    <li>
+                        Starting at the root, label the edge to the left child as 0 and the edge to the right child as 1. Iterate for every child.
+                    </li>
+                    <li>Go over the tree from each leaf to the root, writing down the labeled binary numbers, to generate the code word for each symbol.
+                    </li>
+                </ol>
+                <p>
+                    Once we get the code words, we will notice that using this method, shorter words are assigned to the most frequent symbols. This way, the resulted encoded string is shorter! You can try it out and see the difference using the huffman online encoder:
+                </p>
+                <div style="display:flex; width:100%; justify-content:center;">
+                <a class="try-it-out" href="#input">Try it out</a>
+                </div>
+
+
+                <div class="section">
+                    <section class="sec-block">
+                        <h3 style="font-weight:bold;
+                     margin-bottom: 2rem;  font-style:italic; text-align:center;
+                     font-size: 1.5rem;">
+                     A bit of history
+
+                    </h3>
+                    <p>
+                        The author of <a style="color:wheat" href="https://compression.ru/download/articles/huff/huffman_1952_minimum-redundancy-codes.pdf" target="_blank">the paper</a> that presented the algorithm in 1952 was developed by David Albert Huffman (August 9, 1925 – October 7, 1999), a computer science pioneer from the United States1. The method emerged from a university term paper in an electrical engineering graduate course on information theory, with Robert M. Fano as his professor2.
+                    </p>
+                    <div class="photo-outer">
+                        <div class="huffman-photo">
+                        </div>
+                    </div>
+                    <p>
+                        Huffman did not invent the idea of a coding tree. However, he discovered that assigning the probabilities of the longest codes first and then proceeding along the branches of the tree toward the root, he could arrive at an optimal solution every time. Fano and Shannon had tried to work the problem in the opposite direction, from the root to the leaves, a less efficient solution2.
+                    </p>
+                    <p>
+                        The optimal code developed by David A. Huffman, and it's variations or improvements "are used in all the mainstream compression formats (e.g., PNG, JPEG, MP3, MPEG, GZIP, and PKZIP)". It's one of the fundamental and most used ideas in data communication, and is still as relevant today as it was before3.
+                    </p>
+                    </section>
+                    <section class="sec-block">
+                        <h3 style="font-weight:bold;
+                     margin-bottom: 2rem;  font-style:italic; text-align:center;
+                     font-size: 1.5rem;">
+                     Beyond Huffman Coding
+                    </h3>
+                    <p>
+                        There are <a href="https://en.wikipedia.org/wiki/Huffman_coding#Variations" style="color:white;" target="blank"> many variations</a> each one with it's own particularities. An interesting approach, beautifully explained in <a style="color:white;" target="blank" href="https://ben-tanen.com/adaptive-huffman/">Ben Tanen's site</a>, is Adaptive Huffman Coding. It consists in calculating the probabilities of the symbols dynamically, updating the tree structure. This way there's no need to pre-process the input, but the method is not widely used in practice, since the cost of updating the tree makes is slower than optimized adaptive arithmetic coding, more flexible and with better compression.
+                    </p>
+                    <p>
+                        An important limitation of Huffman coding is that with every encoded symbol, up to 1 bit of redundant data can be introduced. With small alphabets, it can make that the length of the original representation doesn't change. Arithmetic Coding tries to avoid this issue5.
+                    </p>
+                    <div class="photo-outer">
+                        <div class="graph">
+
+                        </div>
+                    </div>
+                    <p>
+                        Arithmetic Coding is another form of entropy encoding for lossless data compression. Unlike Huffman, instead of separating the input into component symbols and replacing each with a code, it encodes the entire message into a single number, an arbitrary-precision fraction q, where 0.0 ≤ q < 1.0.
+                        This makes it work better than Huffman for sequencies with very low Entropy.
+                    </p>
+                    <p>
+                        If you are interested in compression and information theory, it is highly encouraged to learn about it.
+                    </p>
+                    </section>
+                </div>
+            </div>
+            <!-- <div class="section">
+                <section>
+                    <h3 style="font-weight:bold;
+                 margin-bottom: 2rem;  font-style:italic; text-align:center;
+                 font-size: 1.5rem;">
+                    What is Huffman Coding?
+                </h3>
+                </section>
+                <section>
+                    <h3 style="font-weight:bold;
+                 margin-bottom: 2rem;  font-style:italic; text-align:center;
+                 font-size: 1.5rem;">
+                    What is Huffman Coding?
+                </h3>
+                </section>
+            </div> -->
+           
+        </div>
+        <div class="partition">
+
+        </div>
+    </div>
+    </main>
+    <footer>
+        <div class="end-block">
+            <div id="about" class="about-this-site">
+                <h3 style="font-style:italic; align-self:center; font-size:1.5rem; margin-bottom:1rem;">
+                    About this site
+
+                </h3>
+                <p class="about">
+                    The objective of this project is to provide an interactive web tool to learn about Huffman Coding, along with the information necessary to understand the key concepts.
+                </p>
+                <p class="about">
+                    This website was developed as a project of the Data Structures course for the 2nd year students of Lakshmi Narain College Of Technology Excellence, Bhopal. 
+                </p>
+                <p class="about">
+                    This website is solely for educational and research purpose and by no means the contents of this site should be taken as 100% true.
+                </p>
+            </div>
+            <div class="references">
+                <h3 style="font-style:italic; align-self:center; font-size:1.5rem; margin-bottom:1rem;">
+                    References
+                </h3>
+                <ol style="padding-left:1rem;">
+                    <li>
+                        Stephens, Tim; Burns, Jim (October 11, 1999). <a style="color:white;" href="https://web.archive.org/web/20110716161810/http://www1.ucsc.edu/currents/99-00/10-11/huffman.html" target="_blank" >"Eminent UCSC computer scientist David Huffman dies at age 74".</a> Currents Online. University of California, Santa Cruz. Archived from the original on July 16, 2011. Accessed 14 December 2021.
+                    </li>
+                    <li>
+                        (September 1991). <a style="color:white;" href="https://www.huffmancoding.com/my-uncle/scientific-american" target="_blank">"Profile: Information Theorist David A. Huffman".</a> Scientific American. Vol. 265 no. 3. Nature Publishing Group. pp. 54–58. Accessed 14 December 2021.
+                    </li>
+                    <li>
+                        Barbay, J., 2019. <a style="color:white;" href="https://www.proquest.com/docview/2545919992?sourcetype=Scholarly%20Journals" target="_blank">Optimal Prefix Free Codes with Partial Sorting. Algorithms</a>, [online] 13(1), p.12. Accessed 14 December 2021.
+                    </li>
+                    <li>
+                        Davis, E., Demaine, E., Demaine, M. and Ramseyer, J., 2013. <a style="color:white;" href="https://erikdemaine.org/papers/Huffman_Origami5/paper.pdf" target="_blank">Reconstructing David Huffman's Origami Tessellations</a>. Journal of Mechanical Design, [online] 135(11). Accessed 4 December 2021
+                    </li>
+                    <li>
+                        Introduction to Algorithms 4th Edition by  Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein
+                    </li>
+                </ol>
+                
+            </div>
+            <div class="last-partition">
+
+            </div>
+
+            <div class="about-the-author">
+                <p style="font-style: italic;">
+                    Developed by Tarang Kharkar in December 2023
+                </p>
+                <div style="display:flex; justify-content:center; padding-top:1rem; padding-bottom:10rem;">
+                <a href="https://www.linkedin.com/in/tarang-kharkar-a9a314258/" target="_blank" class="linkedin"></a>
+                <a href="https://github.com/TarangKh" target="_blank" class="github"></a>
+                </div>
+            </div>
+        </div>
+    </footer>
     
 </body>
 </html>
