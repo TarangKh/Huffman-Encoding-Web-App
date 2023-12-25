@@ -6,26 +6,26 @@ import pickle
 import os
 from src import utils
 
-
-## utility function to store characters along with their huffman code in hash table
-encoded_map = {}
-def storeCode(root:Node, s:str):
-    if root.left == None and root.right == None:
-        encoded_map[root.data] = s
-    else:
-        storeCode(root.left, s+"0")
-        storeCode(root.right, s+"1")
-
-
+    
 
 class HuffmanEncoder:
     def __init__(self):
         self.encodedMap = {}                # to map each character it's huffman value
-        self.freqMap = defaultdict(int)     # to map each character with it's frequency from input
+        self.freqMap = defaultdict(int)     # to map each character with it's frequency 
         self.rootnode = None 
-        self.minHeap = []     
-        self.total_words = 0   
-    
+        self.minHeap = []        
+        self.total_chars = 0
+
+
+    ## utility function to store characters along with their huffman code in hash table
+    def storeCode(self, root:Node, s:str):
+        if root.left == None and root.right == None:
+            self.encodedMap[root.data] = s
+        else:
+            self.storeCode(root.left, s+"0")
+            self.storeCode(root.right, s+"1")
+
+
     ## utility function to print characters along with their huffman codes
     def printCode(self):
         for char in self.encodedMap.items():
@@ -36,10 +36,10 @@ class HuffmanEncoder:
         for char in self.freqMap.items():
             print(char[0],":",char[1])
 
-
     ## function to build Huffman tree and store it into minheap
     def createHuffmanTree(self, s:str):
         self.freqMap.clear()
+        self.encodedMap.clear()
         self.initialize(s)
         for key in self.freqMap:
             new_node = Node(key, self.freqMap[key])
@@ -55,17 +55,13 @@ class HuffmanEncoder:
             heapq.heappush(self.minHeap, top)
         
         self.rootnode = self.minHeap[0]
-        global encoded_map
         self.encodedMap.clear()
-        encoded_map.clear()
-        storeCode(self.rootnode, "")
-        self.encodedMap = encoded_map
-
+        self.storeCode(self.rootnode, "")
     ## function to enocde the given string and return encoded string
     def encode(self, s:str)->str:
+        self.total_chars = len(s)
         self.createHuffmanTree(s)
         encodedString = ""
-        self.total_words = len(s)
         for char in s:
             encodedString += self.encodedMap[char]
         return encodedString
@@ -94,10 +90,11 @@ class HuffmanEncoder:
         for char in self.encodedMap.items():
             code.append(char)
         return code
-    
-    def getTotalWords(self)->int:
-        return self.total_words
 
+    # function to return total characters of the input
+    def getTotalChars(self):
+        return self.total_chars
+    
 
 
 
@@ -144,7 +141,6 @@ class HuffmanDecoder:
 
 
 
-
 def inorder(root:Node):
     if root == None:
         return None
@@ -178,85 +174,14 @@ def serialize(root:Node):
 
 if __name__ == "__main__":
     s = input(">>> ")
+    print(s)
     encoder = HuffmanEncoder()
     encoded = encoder.encode(s)
     print(encoded)
-
     root = encoder.getRoot()
-
-    file_path = serialize(root)
-    # print(file_path)
-    # inorder(root)
-    freq = encoder.getFrequency()
-    print(freq)
-    # preorder(root)
-    code = encoder.getCode()
-    print(code)
-    zip_path = utils.make_rar(file_path)
-    # print(zip_path)
-    # ino = construct.get_inorder()
-    # pre = construct.get_preorder()
-    # print(ino)
-    # print(pre)
-    # inorder(root)
-    # print()
-    # preorder(root)
-    # print()
-    root = None
-    with open(file_path, "rb") as file:
-        obj = pickle.load(file)
-        preorder = obj.get_preorder()
-        inorder = obj.get_inorder()
-        print(inorder)
-        print(preorder)
-        decoder = HuffmanDecoder()
-        root = decoder.generate_tree(preorder, inorder)
-        print()
-        
-    # preorder(root)
-    # print()
-    # inorder(root)
-    # print()
-    # print(type(root))
-
-    
- 
-
-    
-
-    
-    # with open("Files/TreeConstruct.pkl", "wb") as file:
-    #     pickle.dump(construct, file)
-    
-    # with open("Files/TreeConstruct.pkl", "rb") as file:
-    #     obj = pickle.load(file)
-    #     root = obj.construct_tree()
-    #     dec_str = decoder.decode(root, enc_str)
-    #     print(dec_str)
-
-
-    # inorder(root)
-    # print()
-    # construct = TreeConstructor(root)
-    # construct.preorder(construct.root)
-    # print()
-    # construct.inorder(construct.root)
-    
-
-    # print("\n"*3)
-    # data = "abracadabra bom bom"
-    # encoder = HuffmanEncoder()
-    # enc_str = encoder.encode(data)
-    # print(enc_str)
-    # freq = encoder.getFrequency()
-    # print(freq)
-    # code = encoder.getCode()
-    # print(code)
-    # root = encoder.getRoot()
-    # decoder = HuffmanDecoder()
-    # dec_str = decoder.decode(root, enc_str)
-    # print(dec_str)
-
+    decoder = HuffmanDecoder()
+    decoded = decoder.decode(root, encoded)
+    print(decoded)
 
 
     
